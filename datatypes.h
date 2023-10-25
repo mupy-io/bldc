@@ -1150,7 +1150,7 @@ typedef enum {
 
 	COMM_LOG_DATA_F64,
 
-	COMM_BIKE_DATA_PACK = 340,
+	COMM_BIKE_DATA_PACK = 200,
 } COMM_PACKET_ID;
 
 // CAN commands

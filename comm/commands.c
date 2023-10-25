@@ -230,7 +230,7 @@ void commands_process_packet(unsigned char *data, unsigned int len,
 			
 			int32_t ind = 0;
 			uint8_t *send_buffer = mempools_get_packet_buffer();
-			send_buffer[ind++] = packet_id;
+			//send_buffer[ind++] = packet_id;
 
 			mc_configuration *mcconf = mempools_alloc_mcconf();
 			*mcconf = *mc_interface_get_configuration();
