@@ -225,6 +225,43 @@ void commands_process_packet(unsigned char *data, unsigned int len,
 	}
 
 	switch (packet_id) {
+
+		case COMM_BIKE_DATA_PACK:{
+			
+			int32_t ind = 0;
+			uint8_t *send_buffer = mempools_get_packet_buffer();
+			send_buffer[ind++] = packet_id;
+
+			mc_configuration *mcconf = mempools_alloc_mcconf();
+			*mcconf = *mc_interface_get_configuration();
+			
+			send_buffer[ind++] = COMM_BIKE_DATA_PACK;
+
+			send_buffer[ind++] = mc_interface_get_fault();
+			buffer_append_float16(send_buffer, mc_interface_temp_fet_filtered(), 1e1, &ind);
+			buffer_append_float16(send_buffer, mc_interface_temp_motor_filtered(), 1e1, &ind);
+			buffer_append_float32(send_buffer, mc_interface_read_reset_avg_motor_current(), 1e2, &ind);
+			buffer_append_float32(send_buffer, mc_interface_read_reset_avg_input_current(), 1e2, &ind);
+			buffer_append_float16(send_buffer, mc_interface_get_duty_cycle_now(), 1e3, &ind);
+			buffer_append_float32(send_buffer, mc_interface_get_rpm(), 1e0, &ind);
+			buffer_append_float16(send_buffer, mc_interface_get_input_voltage_filtered(), 1e1, &ind);
+			buffer_append_float32(send_buffer, mc_interface_get_amp_hours(false), 1e4, &ind);
+			buffer_append_float32(send_buffer, mc_interface_get_amp_hours_charged(false), 1e4, &ind);
+			buffer_append_float32(send_buffer, mc_interface_get_watt_hours(false), 1e4, &ind);
+			buffer_append_float32(send_buffer, mc_interface_get_watt_hours_charged(false), 1e4, &ind);
+			buffer_append_int32(send_buffer, mc_interface_get_tachometer_value(false), &ind);
+			buffer_append_int32(send_buffer, mc_interface_get_tachometer_abs_value(false), &ind);
+			buffer_append_float32(send_buffer, mc_interface_get_pid_pos_now(), 1e6, &ind);
+			// Setup config needed for speed calculation
+			send_buffer[ind++] = (uint8_t)mcconf->si_motor_poles;
+			buffer_append_float32_auto(send_buffer, mcconf->si_gear_ratio, &ind);
+			buffer_append_float32_auto(send_buffer, mcconf->si_wheel_diameter, &ind);
+
+			reply_func(send_buffer, ind);
+			mempools_free_packet_buffer(send_buffer);
+
+		}break;
+
 	case COMM_FW_VERSION: {
 		int32_t ind = 0;
 		uint8_t send_buffer[65];
