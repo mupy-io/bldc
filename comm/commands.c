@@ -230,11 +230,7 @@ void commands_process_packet(unsigned char *data, unsigned int len,
 			
 			int32_t ind = 0;
 			uint8_t *send_buffer = mempools_get_packet_buffer();
-			//send_buffer[ind++] = packet_id;
-
-			mc_configuration *mcconf = mempools_alloc_mcconf();
-			*mcconf = *mc_interface_get_configuration();
-			
+						
 			send_buffer[ind++] = COMM_BIKE_DATA_PACK;
 
 			send_buffer[ind++] = mc_interface_get_fault();
@@ -253,9 +249,10 @@ void commands_process_packet(unsigned char *data, unsigned int len,
 			buffer_append_int32(send_buffer, mc_interface_get_tachometer_abs_value(false), &ind);
 			buffer_append_float32(send_buffer, mc_interface_get_pid_pos_now(), 1e6, &ind);
 			// Setup config needed for speed calculation
-			send_buffer[ind++] = (uint8_t)mcconf->si_motor_poles;
-			buffer_append_float32_auto(send_buffer, mcconf->si_gear_ratio, &ind);
-			buffer_append_float32_auto(send_buffer, mcconf->si_wheel_diameter, &ind);
+
+			send_buffer[ind++] = (uint8_t)mc_interface_get_configuration()->si_motor_poles;
+			buffer_append_float32_auto(send_buffer, mc_interface_get_configuration()->si_gear_ratio, &ind);
+			buffer_append_float32_auto(send_buffer, mc_interface_get_configuration()->si_wheel_diameter, &ind);
 
 			reply_func(send_buffer, ind);
 			mempools_free_packet_buffer(send_buffer);
