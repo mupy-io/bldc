@@ -287,6 +287,8 @@ void commands_process_packet(unsigned char *data, unsigned int len,
 
 	case COMM_BIKE_LOCK_BIKE:
 	{
+		mc_interface_lock();
+
 		int32_t ind = 0;
 		uint8_t *send_buffer = mempools_get_packet_buffer();
 
@@ -300,6 +302,7 @@ void commands_process_packet(unsigned char *data, unsigned int len,
 
 	case COMM_BIKE_UNLOCK_BIKE:
 	{
+		mc_interface_unlock();
 		int32_t ind = 0;
 		uint8_t *send_buffer = mempools_get_packet_buffer();
 
